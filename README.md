@@ -362,4 +362,9 @@ A capa do **dashboard** da **API do Spotify** no **Power BI**:
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/eda99aa9-55e0-4633-83b2-25e748674e95
 
+A página da análise da **playlist** das Top 50 músicas globais:
+
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/287070fa-e7af-4f29-a9f6-1a067ab4a950
+
+A página da análise do histórico de **hits** do artista selecionado na página de análise da **playlist** das Top 50 músicas globais:
 
