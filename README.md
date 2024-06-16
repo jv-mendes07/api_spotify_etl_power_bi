@@ -369,3 +369,7 @@ https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/287070fa
 A página da análise do histórico de **hits** do artista selecionado na página de análise da **playlist** das Top 50 músicas globais:
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/9b56153f-a219-4e57-93a6-28cf71eaaf35
+
+## Considerações finais:
+
+Em suma, em tal projeto uso vários serviços da nuvem da **AWS** como o **Lambda**, **S3**, **CloudWatch**, **Athena** e **AWS Crawler** para extrair os dados da **API do Spotify** e transforma-los em **Python** para disponibiliza-los em tabelas no **Glue** com o catálogo de dados (metadados, schema) no **AWS Catalog**, para depois conectar-me no **Athena** via **ODBC** pelo **Power BI** para analisar a **playlist** das Top 50 músicas globais e do histórico de **hits** dos artistas de tal **playlist**.
