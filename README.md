@@ -368,3 +368,4 @@ https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/287070fa
 
 A página da análise do histórico de **hits** do artista selecionado na página de análise da **playlist** das Top 50 músicas globais:
 
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/9b56153f-a219-4e57-93a6-28cf71eaaf35
