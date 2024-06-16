@@ -1,3 +1,3 @@
 # Projeto de ETL com a API do Spotify, Lambda, CloudWatch, S3, Athena & Power BI
 
-Em tal projeto de engenharia de dados, uso a **API do Spotify** junto  dados da **playlist das Top 50 músicas globais** através da **API** do **Spotify** junto com o histórico de hits de cada artista presente em tal playlist, para depois
+Em meu projeto de engenharia de dados, uso o **CloudWatch** e **AWS Lambda** em **Python** para extrair dados da **API do Spotify** semanalmente e armazená-los em um **bucket** do **S3**. Em seguida, um segundo **Lambda** transforma os dados **JSON** brutos em **CSV**, que são armazenados em outro **bucket** do **S3**. O **AWS Catalog** cria o schema dos metadados dos arquivos **CSV** para consulta no **AWS Athena**. Conecto-me ao **Athena** via **ODBC** para extrair os dados para o **Power BI**, onde analiso a playlist das 50 músicas mais ouvidas globalmente e o histórico de hits dos artistas presentes na playlist.
