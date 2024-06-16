@@ -357,3 +357,9 @@ Com o usuário no **IAM Role**, configurei a conexão no **ODBC** com a região 
 ## Dashboard de análise no Power BI:
 
 Para finalizar o projeto, construi um **dashboard** completo de análise **(1)** da **playlist** das 50 músicas globalmente mais ouvidas e dos **(2)** hits históricos dos artistas presentes em tal **playlist**.
+
+A capa do **dashboard** da **API do Spotify** no **Power BI**:
+
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/eda99aa9-55e0-4633-83b2-25e748674e95
+
+
