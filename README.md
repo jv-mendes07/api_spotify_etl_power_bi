@@ -322,4 +322,38 @@ def lambda_handler(event, context):
         s3_resource.meta.client.copy(copy_source, Bucket, 'raw_data/processed/top_tracks_artist_raw/' + key.split('/')[-1])
         s3_resource.Object(Bucket, key).delete()
 ```
+Na pasta **transformed_data**, os arquivos **CSV** são separados por arquivos de **álbuns**, **artistas**, **músicas** e **hits dos artistas** em sub-pastas no **bucket** do **S3**:
 
+![](img/transformed_data_csv.png)
+
+## Catálogo de dados no AWS Crawler:
+
+Com os arquivos **CSV** transformados da **API do Spotify**, criei **crawlers** no **AWS Crawler** para catalogar os dados dos arquivos **CSV** da sub-pasta **transformed_data**. Cada **crawler** transforma esses arquivos **CSV** em tabelas, definindo nomes e tipos de dados das colunas para consultas **SQL** no **AWS Athena**.
+
+![](img/crawler_aws.png)
+
+Com o catálogo de dados, consegui realizar consultas analíticas com linguagem **SQL** no **AWS Athena**:
+
+![](img/athena_consult_data_tables.png)
+
+## Conexão via ODBC:
+
+Depois configurei uma conexão via **ODBC** para extrair os dados de tais tabelas de **músicas**, **artistas** e **álbuns** da **playlist** das Top 50 músicas e da tabela de **hits dos artistas** que estão em tal **playlist** disponibilizados no **AWS Athena**.
+
+Criei um usuário no **IAM Role** para ter credenciais de acessso ao **AWS Athena** pelo **Power BI**:
+
+![](img/iam_user_acess_athena_from_power_bi.png)
+
+Com o usuário no **IAM Role**, configurei a conexão no **ODBC** com a região do **AWS**, o caminho do **bucket** no **S3** e às credenciais de acesso ao **AWS Athena**.
+
+#### Configuração de conexão via ODBC
+
+![](img/config_odbc_connection.png)
+
+#### Conexão via ODBC
+
+![](img/odbc_connection_bucket_s3.png)
+
+## Dashboard de análise no Power BI:
+
+Para finalizar o projeto, construi um **dashboard** completo de análise **(1)** da **playlist** das 50 músicas globalmente mais ouvidas e dos **(2)** hits históricos dos artistas presentes em tal **playlist**.
