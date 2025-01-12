@@ -349,9 +349,9 @@ In the **transformed_data** folder, the **CSV** files are organized into subfold
 
 ## DWH in Snowflake:
 
-Depois configurei o **Snowpipe** no **Snowflake** que irá carregar os dados tratados dos camada de Staging dos arquivos **CSV** dos dados tratados da pasta **transformed_fata** para a tabela-fato e tabelas-dimensão no modelo **Star-Schema Schema** do **DWH** do **Spotify**.
+Then, I configured **Snowpipe** in **Snowflake** to load the processed data from the Staging layer, specifically the **CSV** files from the **transformed_data** folder, into the fact table and dimension tables in the **Snowflake Schema** model of the **Spotify DWH**.
 
-Criação de **database** do **Spotify** e de **schemas** de tabela-fato e tabelas-dimensão do **DWH**:
+Creation of the **Spotify Database** and **Schemas** for the Fact Table and Dimension Tables in the **DWH**:
 
 ```
 CREATE OR REPLACE DATABASE SPOTIFY_DWH;
@@ -360,7 +360,7 @@ CREATE OR REPLACE SCHEMA SPOTIFY_DWH.FACT;
 CREATE OR REPLACE SCHEMA SPOTIFY_DWH.DIMENSION;
 ```
 
-Tabelas-dimensão **songs**, **artists** e **album**:
+Dimension tables **songs**, **artists** e **album**:
 
 ```
 CREATE OR REPLACE TABLE SPOTIFY_DWH.DIMENSION.ALBUM (
@@ -389,7 +389,7 @@ CREATE OR REPLACE TABLE SPOTIFY_DWH.DIMENSION.ARTISTS (
     external_urls STRING
 );
 ```
-Tabela-fato **top_tracks_artist**:
+Fact table **top_tracks_artist**:
 
 ```
 CREATE OR REPLACE TABLE SPOTIFY_DWH.FACT.TOP_TRACKS_ARTIST (
@@ -407,8 +407,7 @@ CREATE OR REPLACE TABLE SPOTIFY_DWH.FACT.TOP_TRACKS_ARTIST (
     external_url STRING
     );
 ```
-**Storage Integration** com a pasta **transformed_data** no **bucket** do **S3**, definição do formato de arquivo **CSV** e camada de Staging do **DWH**:
-
+**Storage Integration** with the **transformed_data** folder in the **S3 bucket**, definition of the **CSV** file format, and Staging layer configuration for the **DWH**:
 ```
 CREATE OR REPLACE FILE FORMAT MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
     TYPE = CSV,
@@ -450,7 +449,9 @@ CREATE OR REPLACE STAGE MANAGE_DB.EXTERNAL_STAGES.TOP_TRACKS_ARTIST_DATA
     FILE_FORMAT = MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
     DIRECTORY = (ENABLE = TRUE AUTO_REFRESH = TRUE);
 ```
+**Snowflake Schema Modeling** with Fact Table and Dimension Tables in **Power BI**:
 
+![](img/dimensional_modeling.png)
 
 ## Analysis Dashboard in Power BI:
 
