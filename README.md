@@ -8,7 +8,7 @@ The **AWS Glue Data Catalog** generates the metadata schema for the **CSV** file
 
 The original project architecture from the **Python For Data Engineering** course by **Darshil Parmar** is as follows:
 
-![](img/project_etl_api_spotify.png)
+![](img/Data Arquitecture (API Spotify) - Edited.png)
 
 Porém, reformulei o projeto com a adição do **ODBC** e do **Power BI** para realizar toda a análise de dados da **playlist** das **Top 50 músicas do globo** e dos artistas contidos em tal **playlist**.
 
