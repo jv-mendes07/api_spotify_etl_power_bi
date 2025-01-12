@@ -137,7 +137,6 @@ from datetime import datetime
 import os
 from io import StringIO
 
-
 def albums(data):
     album_list = []
     for row in data['items']:
@@ -217,6 +216,21 @@ def lambda_handler(event, context):
     
     s3 = boto3.client('s3')
     Bucket = 'spotify-etl-project-jv'
+
+    transformed_data_keys = [
+        'transformed_data/song_data/',
+        'transformed_data/artist_data/',
+        'transformed_data/album_data/',
+        'transformed_data/top_tracks_artist_data/'
+    ]
+    
+    for key_prefix in transformed_data_keys:
+        objects_to_delete = s3.list_objects(Bucket=Bucket, Prefix=key_prefix).get('Contents', [])
+        for obj in objects_to_delete:
+            if obj['Key'].endswith('.csv'):
+                s3.delete_object(Bucket=Bucket, Key=obj['Key'])
+
+
     key_data_playlist_tracks_raw = 'raw_data/to_processed/data_playlist_tracks_raw/'
     key_data_top_tracks_artist = 'raw_data/to_processed/top_tracks_artist_raw/'
     
@@ -268,8 +282,8 @@ def lambda_handler(event, context):
         song_df = song_df.applymap(lambda x: x.strip().replace('"', '') if isinstance(x, str) else x)
         song_df = song_df.drop_duplicates()
 
-        album_df['album_release_date'] = pd.to_datetime(album_df['album_release_date'])
-        song_df['song_added'] = pd.to_datetime(song_df['song_added'])
+        album_df['album_release_date'] = pd.to_datetime(album_df['album_release_date'], errors = 'coerce')
+        song_df['song_added'] = pd.to_datetime(song_df['song_added'], errors = 'coerce')
         
         song_key = 'transformed_data/song_data/songs_transformed_' + str(datetime.now()) + '.csv'
         song_buffer = StringIO()
