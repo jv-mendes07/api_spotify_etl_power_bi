@@ -363,6 +363,8 @@ Analysis Page of the Hit History for the Selected Artist from the **Top 50 Globa
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/9b56153f-a219-4e57-93a6-28cf71eaaf35
 
+Dashboard Link: https://abrir.link/olSmK
+
 ## Final Considerations:
 
 In summary, this project utilizes various **AWS** cloud services, including **Lambda**, **S3**, and **CloudWatch**, to extract data from the **Spotify API** and transform it using **Python**. The data is then structured into fact and dimension tables modeled in **Snowflake**. Finally, I connect to **Power BI** to analyze the **Top 50 Global Playlist** and the hit history of the artists featured in the playlist.
