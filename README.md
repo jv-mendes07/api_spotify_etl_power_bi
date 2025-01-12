@@ -347,6 +347,111 @@ In the **transformed_data** folder, the **CSV** files are organized into subfold
 
 ![](img/transformed_data_csv.png)
 
+## DWH in Snowflake:
+
+Depois configurei o **Snowpipe** no **Snowflake** que irá carregar os dados tratados dos camada de Staging dos arquivos **CSV** dos dados tratados da pasta **transformed_fata** para a tabela-fato e tabelas-dimensão no modelo **Star-Schema Schema** do **DWH** do **Spotify**.
+
+Criação de **database** do **Spotify** e de **schemas** de tabela-fato e tabelas-dimensão do **DWH**:
+
+```
+CREATE OR REPLACE DATABASE SPOTIFY_DWH;
+
+CREATE OR REPLACE SCHEMA SPOTIFY_DWH.FACT;
+CREATE OR REPLACE SCHEMA SPOTIFY_DWH.DIMENSION;
+```
+
+Tabelas-dimensão **songs**, **artists** e **album**:
+
+```
+CREATE OR REPLACE TABLE SPOTIFY_DWH.DIMENSION.ALBUM (
+    album_id STRING NOT NULL,
+    album_name STRING,
+    album_release_date DATE,
+    album_total_tracks INTEGER,
+    album_external_urls STRING
+);
+
+CREATE OR REPLACE TABLE SPOTIFY_DWH.DIMENSION.SONG (
+    song_id STRING NOT NULL,
+    song_name STRING,
+    song_duration_ms INTEGER,
+    song_url STRING,
+    song_popularity INTEGER,
+    song_added TIMESTAMP_NTZ,
+    album_id STRING,
+    artist_id STRING
+);
+
+
+CREATE OR REPLACE TABLE SPOTIFY_DWH.DIMENSION.ARTISTS (
+    artist_id STRING NOT NULL,
+    artist_name STRING,
+    external_urls STRING
+);
+```
+Tabela-fato **top_tracks_artist**:
+
+```
+CREATE OR REPLACE TABLE SPOTIFY_DWH.FACT.TOP_TRACKS_ARTIST (
+    artist_id STRING,
+    artist_name STRING,
+    track_name STRING,
+    popularity INTEGER,
+    duration_ms INTEGER,
+    song_id STRING,
+    album_name STRING,
+    total_tracks INTEGER,
+    album_id STRING,
+    release_date DATE,
+    image_album STRING,
+    external_url STRING
+    );
+```
+**Storage Integration** com a pasta **transformed_data** no **bucket** do **S3**, definição do formato de arquivo **CSV** e camada de Staging do **DWH**:
+
+```
+CREATE OR REPLACE FILE FORMAT MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
+    TYPE = CSV,
+    FIELD_DELIMITER = ';',
+    SKIP_HEADER = 1,
+    ERROR_ON_COLUMN_COUNT_MISMATCH = FALSE;
+
+CREATE OR REPLACE STORAGE INTEGRATION s3_spotify_transformed_data
+    TYPE = EXTERNAL_STAGE
+    STORAGE_PROVIDER = S3
+    ENABLED = TRUE
+    STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::381491959115:role/snowflake-s3-storage-integration'
+    STORAGE_ALLOWED_LOCATIONS = ('s3://spotify-etl-project-jv/transformed_data/')
+        COMMENT = 'Creating connection to S3 bucket with the Spotify data cleansed';
+
+CREATE OR REPLACE SCHEMA MANAGE_DB.EXTERNAL_STAGES;
+
+CREATE OR REPLACE STAGE MANAGE_DB.EXTERNAL_STAGES.ALBUM_DATA
+    URL = 's3://spotify-etl-project-jv/transformed_data/album_data/'
+    STORAGE_INTEGRATION = s3_spotify_transformed_data
+    FILE_FORMAT = MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
+    DIRECTORY = (ENABLE = TRUE AUTO_REFRESH = TRUE);
+
+CREATE OR REPLACE STAGE MANAGE_DB.EXTERNAL_STAGES.SONG_DATA
+    URL = 's3://spotify-etl-project-jv/transformed_data/song_data/'
+    STORAGE_INTEGRATION = s3_spotify_transformed_data
+    FILE_FORMAT = MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
+    DIRECTORY = (ENABLE = TRUE AUTO_REFRESH = TRUE);
+
+CREATE OR REPLACE STAGE MANAGE_DB.EXTERNAL_STAGES.ARTIST_DATA
+    URL = 's3://spotify-etl-project-jv/transformed_data/artist_data/'
+    STORAGE_INTEGRATION = s3_spotify_transformed_data
+    FILE_FORMAT = MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
+    DIRECTORY = (ENABLE = TRUE AUTO_REFRESH = TRUE);
+    
+CREATE OR REPLACE STAGE MANAGE_DB.EXTERNAL_STAGES.TOP_TRACKS_ARTIST_DATA
+    URL = 's3://spotify-etl-project-jv/transformed_data/top_tracks_artist_data/'
+    STORAGE_INTEGRATION = s3_spotify_transformed_data
+    FILE_FORMAT = MANAGE_DB.FILE_FORMATS.CSV_FILE_FORMAT
+    DIRECTORY = (ENABLE = TRUE AUTO_REFRESH = TRUE);
+```
+
+
 ## Analysis Dashboard in Power BI:
 
 To finalize the project, I built a comprehensive dashboard analyzing **(1)** the Top 50 Global playlist and **(2)** the historical hits of the artists featured in the playlist.
