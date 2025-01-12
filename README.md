@@ -361,7 +361,7 @@ https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/ecd116cd-95f5-4ad
 
 Analysis Page of the Hit History for the Selected Artist from the **Top 50 Global Playlist Analysis Page**:
 
-https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/9b56153f-a219-4e57-93a6-28cf71eaaf35
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/975dbb09-409c-47d1-86cf-491250f6ac81
 
 Dashboard Link: https://abrir.link/olSmK
 
