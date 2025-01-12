@@ -471,7 +471,7 @@ Analysis Page of the Hit History for the Selected Artist from the **Top 50 Globa
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/975dbb09-409c-47d1-86cf-491250f6ac81
 
-Dashboard Link: https://abrir.link/olSmK
+Dashboard Link: https://app.powerbi.com/view?r=eyJrIjoiMzFkNDJmZTQtNThmZS00ZWFkLTllNTYtYzIwOGRjMTk4OTJjIiwidCI6IjY4N2JiYWExLTdjN2QtNGU2Ni04YWExLTQ2MzNhOTUzMDQ2YiIsImMiOjh9&pageName=ReportSectionc6667a120636a64002d6
 
 ## Final Considerations:
 
