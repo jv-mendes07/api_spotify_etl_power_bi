@@ -127,7 +127,9 @@ To execute the **Lambda** function for data transformation, I added a **Pandas**
 
 ![](img/add_camad_pandas_lambda.png)
 
-Next, I deployed the **Python** code in **AWS Lambda** to transform the raw and semi-structured data from the **Top 50 Global playlist** and the **hit tracks** of the artists in the playlist. The code normalizes the **JSON** data into a tabular **CSV** format and saves the transformed data in the **transformed_data** folder of the **S3 bucket**:
+Next, I deployed the **Python** code in **AWS Lambda** to transform the raw and semi-structured data from the **Top 50 Global playlist** and the **hit tracks** of the artists in the playlist. 
+
+The code normalizes the **JSON** data into a tabular **CSV** format and saves the transformed data in the **transformed_data** folder of the **S3 bucket**:
 
 ```
 import json
