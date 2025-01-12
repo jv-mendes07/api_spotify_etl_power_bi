@@ -353,11 +353,11 @@ To finalize the project, I built a comprehensive dashboard analyzing **(1)** the
 
 Cover Page of the **Spotify API Dashboard** in **Power BI**:
 
-https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/0902e8c0-e951-45ac-869e-1e976abbc50e
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/d3f4fadc-65eb-4210-a91b-277449135532
 
 Analysis Page of the **Top 50 Global Playlist**:
 
-https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/ecd116cd-95f5-4adb-8bba-610a3f6284da
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/d93a96e9-07ec-44ad-8965-350b1b6b0530
 
 Analysis Page of the Hit History for the Selected Artist from the **Top 50 Global Playlist Analysis Page**:
 
