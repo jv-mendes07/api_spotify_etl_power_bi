@@ -357,7 +357,7 @@ https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/0902e8c0
 
 Analysis Page of the **Top 50 Global Playlist**:
 
-https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/2f4d12c5-b282-4bef-97f6-a9925926a0c9
+https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/3d65db6b-16d9-44bb-8528-1f53c32095ce
 
 Analysis Page of the Hit History for the Selected Artist from the **Top 50 Global Playlist Analysis Page**:
 
