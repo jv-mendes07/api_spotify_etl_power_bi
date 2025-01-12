@@ -32,7 +32,9 @@ Below is an example of raw **JSON** files extracted from the **Spotify API** and
 
 #### Data Extraction from the Spotify API:
 
-In the data extraction phase from the **Spotify API**, I built a **Pipeline** in **AWS Lambda** that uses **(1) CloudWatch** to trigger a **Python Lambda** function. This function extracts data from the **Spotify API** and saves it in **JSON** format in the **to_processed** folder of the **spotify-etl-project-jv** **S3 bucket**.
+In the data extraction phase from the **Spotify API**, I built a **Pipeline** in **AWS Lambda** that uses **(1) CloudWatch** to trigger a **Python Lambda** function. 
+
+This function extracts data from the **Spotify API** and saves it in **JSON** format in the **to_processed** folder of the **spotify-etl-project-jv** **S3 bucket**.
 
 ![](img/pipeline_cloudwatch_weekly_extract.png)
 
