@@ -1,58 +1,59 @@
-# ETL Project with Spotify API, Lambda, CloudWatch, S3, Athena & Power BI:
+# ETL Project with Spotify API, Lambda, CloudWatch, S3, Snowflake & Power BI:
 
 In my data engineering project, I use **CloudWatch** and **AWS Lambda** in **Python** to extract data from the **Spotify API** weekly and store it in an **S3 bucket**. 
 
 A second **Lambda** function transforms the raw **JSON** data into **CSV**, which is saved in another **S3 bucket**. 
 
-The **AWS Glue Data Catalog** generates the metadata schema for the **CSV** files, enabling queries in **AWS Athena**. I connect to **Athena** via **ODBC** to extract data into **Power BI**, where I analyze the global Top 50 playlist and the hit history of the artists featured.
+**Snowpipe** loads transformed data from the Staging layer into fact and dimension tables in **Snowflake**. The processed data is then used in a **Power BI dashboard**, providing **(1)** an analysis of Spotify's global Top 50 playlist and **(2)** a detailed breakdown of the most popular songs by the artists in the playlist.
 
-The original project architecture from the **Python For Data Engineering** course by **Darshil Parmar** is as follows:
+That's the data architecture of the project:
 
-![](img/Data Arquitecture (API Spotify) - Edited.png)
+![](img/data_arquitecture.png)
 
-Porém, reformulei o projeto com a adição do **ODBC** e do **Power BI** para realizar toda a análise de dados da **playlist** das **Top 50 músicas do globo** e dos artistas contidos em tal **playlist**.
+## Bucket on AWS S3:
 
-## Bucket no AWS S3:
-
-Primeiramente, criei o **bucket** **spotify-etl-project-jv** no **S3** para armazenar às extrações e às transformações dos dados semi-estruturados da **API do Spotify**:
+First, I created the **spotify-etl-project-jv** **S3 bucket** to store the extractions and transformations of semi-structured data from the **Spotify API**.
 
 ![](img/create_bucket_s3.png)
 
-Depois criei mais duas pastas em tal **bucket**, uma pasta **processed** com o histórico de arquivos **JSON** processados e transformados da **API do Spotify**, e outra pasta **to_processed** com arquivos **JSON** novos da **API do Spotify** para serem processados pela função **Lambda** do **AWS** com **Python**:
+Next, I created two folders in the **bucket**: **processed**, for storing processed and transformed **JSON** files from the **Spotify API**, and **to_processed**, for new **JSON** files to be processed by the **AWS Lambda** function in **Python**.
 
 ![](img/raw_data_processed_to_processed.png)
 
-Nas pastas **processed** e **to_processed** há mais duas sub-pastas **data_playlist_tracks_raw** para armazenar os dados brutos em formato **JSON** da playlist das 50 músicas globalmente mais ouvidas e **top_tracks_artist_raw** para armazenar os dados brutos em formato **JSON** do histórico de **hits** dos artistas que estão presentes em tal playlist.
+The **processed** and **to_processed** folders contain two subfolders: **data_playlist_tracks_raw**, for raw **JSON** data of the Top 50 global playlist, and **top_tracks_artist_raw**, for raw **JSON** data of the hit history of artists in the playlist.
 
 ![](img/raw_data_to_processed_buckets.png)
 
-Abaixo, um exemplo dos arquivos **JSON** de dados brutos extraídos da **API do Spotify** armazenados no **bucket** **processed** do **S3**:
+Below is an example of raw **JSON** files extracted from the **Spotify API** and stored in the **processed** folder of the **S3 bucket**:
 
 ![](img/raw_data_processed_json_historical.png)
 
-## Funções no AWS Lambda:
+## Functions in AWS Lambda:
 
-#### Extração de dados da API do Spotify
+#### Data Extraction from the Spotify API:
 
-Na fase de extração dos dados brutos da **API do Spotify**, criei uma **Pipeline** no **AWS Lambda** que usa o **(1)** **CloudWatch** para acionar o **Lambda** em **Python** para extrair os dados da **API do Spotify** e descarrega-los no formato **JSON** na pasta **to_processed** do **bucket** **spotify-etl-project-jv** no **S3**:
+In the data extraction phase from the **Spotify API**, I built a **Pipeline** in **AWS Lambda** that uses **(1) CloudWatch** to trigger a **Python Lambda** function. 
+
+This function extracts data from the **Spotify API** and saves it in **JSON** format in the **to_processed** folder of the **spotify-etl-project-jv** **S3 bucket**.
 
 ![](img/pipeline_cloudwatch_weekly_extract.png)
 
-Configurei a **trigger** no **CloudWatch** para executar a função **Lambda** de extração de dados da **API do Spotify** semanalmente:
+I configured the **CloudWatch trigger** to run the **Lambda** function for extracting data from the **Spotify API** on a weekly basis.
 
 ![](img/aws_cloudwatch_config.png)
 
-Para executar a função **Lambda** de extração, configurei variáveis de ambiente para armazenar os segredos de acesso da **API do Spotify** e adicionei a camada do pacote **spotipy** para o **AWS Lambda** poder usar a biblioteca de conexão à **API do Spotify**:
+To execute the **Lambda** function for data extraction, I configured environment variables to store the **Spotify API** access secrets and added the **spotipy** package layer, enabling **AWS Lambda** to use the library for connecting to the **Spotify API**.
 
-**Variáveis de ambiente** 
+**Environment Variables** 
 
 ![](img/ambient_variables.png)
 
-**Spotipy Pacote**
+**Spotipy Package**
 
 ![](img/spotipy_package_lambda.png)
 
-Por fim, coloquei o código **Python** no **AWS Lambda** para extrair os dados brutos e semi-estruturados no formato **JSON** da **playlist** das Top 50 músicas globais e dos **hits** dos artistas de tal **playlist**:
+Finally, I deployed the **Python** code in **AWS Lambda** to extract raw and semi-structured **JSON** data for the **Top 50 Global playlist** and the **hit tracks** of the artists in that playlist.
+
 ```
 import json
 import os
@@ -108,23 +109,25 @@ def lambda_handler(event, context):
         Body = json.dumps(data_playlist_tracks)
         )
 ```
-#### Transformação de dados da API do Spotify
+#### Data Transformation from the Spotify API
 
-Na segunda fase, criei uma **Pipeline** no **AWS Lambda** que transforma os dados da **API do Spotify** quando novos arquivos **JSON** são carregados na pasta **to_processed** no **bucket** do **S3**. A **trigger** para o **AWS Lambda** é o evento de criação de novos arquivos **JSON** nessa pasta, indicando que há dados para serem processados e transformados.
+In the second phase, I created a **Pipeline** in **AWS Lambda** to transform data from the **Spotify API** whenever new **JSON** files are uploaded to the **to_processed** folder in the **S3 bucket**. 
+
+The **Lambda trigger** is an event that detects the creation of new **JSON** files in this folder, signaling that data is ready for processing and transformation:
 
 ![](img/pipeline_s3_event_transform_data.png)
 
-Configurei a **trigger** com um evento do **S3** para executar a função **Lambda** de transformação de dados da **API do Spotify** após haver o carregamento de novos arquivos **JSON** disponíveis na pasta **to_processed**:
+I configured an **S3 event trigger** to execute the **Lambda** function for transforming data from the **Spotify API** whenever new **JSON** files are uploaded to the **to_processed** folder:
 
 ![](img/trigger_event_s3_bucket.png)
 
-Para executar a função **Lambda** de transformação, adicionei uma camada do pacote **Pandas** para o **AWS Lambda** poder usar a biblioteca **Pandas** para manipular e transformar os dados da **API do Spotify**.
+To execute the **Lambda** function for data transformation, I added a **Pandas** package layer to **AWS Lambda**, enabling the use of the **Pandas** library to manipulate and transform data from the **Spotify API**.
 
-**Pandas Pacote**
+**Pandas Package**
 
 ![](img/add_camad_pandas_lambda.png)
 
-Depois, coloquei o código **Python** no **AWS Lambda** para transformar os dados brutos e semi-estruturados da **playlist** das Top 50 músicas globais e dos **hits** dos artistas de tal **playlist**, para normalizar os dados em formato **JSON** para o formato tabular em **CSV**, para disponibilizar tais dados na pasta **transformed_data** do **bucket** no **S3**:
+Next, I deployed the **Python** code in **AWS Lambda** to transform the raw and semi-structured data from the **Top 50 Global playlist** and the **hit tracks** of the artists in the playlist. The code normalizes the **JSON** data into a tabular **CSV** format and saves the transformed data in the **transformed_data** folder of the **S3 bucket**:
 
 ```
 import json
@@ -133,7 +136,6 @@ import pandas as pd
 from datetime import datetime
 import os
 from io import StringIO
-
 
 def albums(data):
     album_list = []
@@ -214,6 +216,21 @@ def lambda_handler(event, context):
     
     s3 = boto3.client('s3')
     Bucket = 'spotify-etl-project-jv'
+
+    transformed_data_keys = [
+        'transformed_data/song_data/',
+        'transformed_data/artist_data/',
+        'transformed_data/album_data/',
+        'transformed_data/top_tracks_artist_data/'
+    ]
+    
+    for key_prefix in transformed_data_keys:
+        objects_to_delete = s3.list_objects(Bucket=Bucket, Prefix=key_prefix).get('Contents', [])
+        for obj in objects_to_delete:
+            if obj['Key'].endswith('.csv'):
+                s3.delete_object(Bucket=Bucket, Key=obj['Key'])
+
+
     key_data_playlist_tracks_raw = 'raw_data/to_processed/data_playlist_tracks_raw/'
     key_data_top_tracks_artist = 'raw_data/to_processed/top_tracks_artist_raw/'
     
@@ -265,8 +282,8 @@ def lambda_handler(event, context):
         song_df = song_df.applymap(lambda x: x.strip().replace('"', '') if isinstance(x, str) else x)
         song_df = song_df.drop_duplicates()
 
-        album_df['album_release_date'] = pd.to_datetime(album_df['album_release_date'])
-        song_df['song_added'] = pd.to_datetime(song_df['song_added'])
+        album_df['album_release_date'] = pd.to_datetime(album_df['album_release_date'], errors = 'coerce')
+        song_df['song_added'] = pd.to_datetime(song_df['song_added'], errors = 'coerce')
         
         song_key = 'transformed_data/song_data/songs_transformed_' + str(datetime.now()) + '.csv'
         song_buffer = StringIO()
@@ -326,54 +343,28 @@ def lambda_handler(event, context):
         s3_resource.meta.client.copy(copy_source, Bucket, 'raw_data/processed/top_tracks_artist_raw/' + key.split('/')[-1])
         s3_resource.Object(Bucket, key).delete()
 ```
-Na pasta **transformed_data**, os arquivos **CSV** são separados por arquivos de **álbuns**, **artistas**, **músicas** e **hits dos artistas** em sub-pastas no **bucket** do **S3**:
+In the **transformed_data** folder, the **CSV** files are organized into subfolders in the **S3 bucket**, separated into **albums**, **artists**, **tracks**, and **artist hits** files:
 
 ![](img/transformed_data_csv.png)
 
-## Catálogo de dados no AWS Crawler:
+## Analysis Dashboard in Power BI:
 
-Com os arquivos **CSV** transformados da **API do Spotify**, criei **crawlers** no **AWS Crawler** para catalogar os dados dos arquivos **CSV** da sub-pasta **transformed_data**. Cada **crawler** transforma esses arquivos **CSV** em tabelas, definindo nomes e tipos de dados das colunas para consultas **SQL** no **AWS Athena**.
+To finalize the project, I built a comprehensive dashboard analyzing **(1)** the Top 50 Global playlist and **(2)** the historical hits of the artists featured in the playlist.
 
-![](img/crawler_aws.png)
-
-Com o catálogo de dados, consegui realizar consultas analíticas com linguagem **SQL** no **AWS Athena**:
-
-![](img/athena_consult_data_tables.png)
-
-## Conexão via ODBC:
-
-Depois configurei uma conexão via **ODBC** para extrair os dados de tais tabelas de **músicas**, **artistas** e **álbuns** da **playlist** das Top 50 músicas e da tabela de **hits dos artistas** que estão em tal **playlist** disponibilizados no **AWS Athena**.
-
-Criei um usuário no **IAM Role** para ter credenciais de acessso ao **AWS Athena** pelo **Power BI**:
-
-![](img/iam_user_acess_athena_from_power_bi.png)
-
-Com o usuário no **IAM Role**, configurei a conexão no **ODBC** com a região do **AWS**, o caminho do **bucket** no **S3** e às credenciais de acesso ao **AWS Athena**.
-
-#### Configuração de conexão via ODBC
-
-![](img/config_odbc_connection.png)
-
-#### Conexão via ODBC
-
-![](img/odbc_connection_bucket_s3.png)
-
-## Dashboard de análise no Power BI:
-
-Para finalizar o projeto, construi um **dashboard** completo de análise **(1)** da **playlist** das 50 músicas globalmente mais ouvidas e dos **(2)** hits históricos dos artistas presentes em tal **playlist**.
-
-A capa do **dashboard** da **API do Spotify** no **Power BI**:
+Cover Page of the **Spotify API Dashboard** in **Power BI**:
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/eda99aa9-55e0-4633-83b2-25e748674e95
 
-A página da análise da **playlist** das Top 50 músicas globais:
+Analysis Page of the **Top 50 Global Playlist**:
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/287070fa-e7af-4f29-a9f6-1a067ab4a950
 
-A página da análise do histórico de **hits** do artista selecionado na página de análise da **playlist** das Top 50 músicas globais:
+Analysis Page of the Hit History for the Selected Artist from the **Top 50 Global Playlist Analysis Page**:
 
 https://github.com/jv-mendes07/api_spotify_etl_power_bi/assets/93790271/9b56153f-a219-4e57-93a6-28cf71eaaf35
 
-## Considerações finais:
+Dashboard Link: https://abrir.link/olSmK
 
-Em suma, em tal projeto uso vários serviços da nuvem da **AWS** como o **Lambda**, **S3**, **CloudWatch**, **Athena** e **AWS Crawler** para extrair os dados da **API do Spotify** e transforma-los em **Python** para disponibiliza-los em tabelas no **Glue** com o catálogo de dados (metadados, schema) no **AWS Catalog**, para depois conectar-me no **Athena** via **ODBC** pelo **Power BI** para analisar a **playlist** das Top 50 músicas globais e do histórico de **hits** dos artistas de tal **playlist**.
+## Final Considerations:
+
+In summary, this project utilizes various **AWS** cloud services, including **Lambda**, **S3**, and **CloudWatch**, to extract data from the **Spotify API** and transform it using **Python**. The data is then structured into fact and dimension tables modeled in **Snowflake**. Finally, I connect to **Power BI** to analyze the **Top 50 Global Playlist** and the hit history of the artists featured in the playlist.
